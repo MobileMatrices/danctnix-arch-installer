@@ -7,7 +7,7 @@ image_config = {
     "device": 'pinephone',
     "arch": "aarch64",
     "hostname": "danctnix",
-    "storage": "/dev/mmcblk0"
+    "storage": "undefined"
 }
 def initialize_repo():
     path = "/home/USER/.local/var"
@@ -55,10 +55,13 @@ def run():
     command = "sudo ./build.sh -d "+ image_config['device'] + " -u " + image_config['ui'] + " -a " + image_config['arch'] + " -h " + image_config['hostname']
     print(command)
     os.system(command)
+    # flash image
+    if image_config['storage'] != "undefined":
+        os.system("sudo dd if=build/*.img of=/dev/"+image_config['storage']+" bs=4M status=progress")    
     sys.exit()
 def main():
     funcs = [device, user_interface, architecture, hostname, storage, run, sys.exit]
-    options = ["Device", "User Interface", "Architecture", "Hostname", "Storage", "Continue", "Exit"]
+    options = [str(f"Device - {image_config['device']}"), str(f"User Interface - {image_config['ui']}"), str(f"Architecture - {image_config['arch']}"), str(f"Hostname - {image_config['hostname']}"), f"Storage Device - {image_config['storage']}", "Continue", "Exit"]
     terminal_menu = TerminalMenu(options)
     menu_entry_index = terminal_menu.show()
     funcs[menu_entry_index]()
